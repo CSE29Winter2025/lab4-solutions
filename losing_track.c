@@ -3,31 +3,41 @@
 #include <stdlib.h>
 #include <string.h>
 
+// NOTE: This is only one of many possible solutions.
 char *getQueries(char *url) {
-  char *query = malloc(sizeof(char) * (strlen(url) + 1));
+    // Don't allocate space for the entire lowercased URL here
 
-  // make our lowercase string
-  for (int i = 0; i < strlen(url); i++) {
-    query[i] = tolower(url[i]);
-  }
-  query[strlen(url)] = '\0';
+    // search for ?
+    char *ptr = url;
+    while (*ptr != '?' && *ptr != 0) {
+        ptr++;
+    }
+    // Skip the ? if found
+    if (*ptr == '?') {
+        ptr++;
+    }
+    // Now, ptr should point right after the ? or to '\0'
 
-  // search for ?
-  char *ptr = query;
-  while (*ptr != '?' && *ptr != 0) {
-    ptr++;
-  }
-  if (*ptr == '?') {
-    return ptr + 1;
-  }
-  return ptr;
+    // make our lowercase *query* string
+    char *query = malloc(strlen(ptr) + 1);
+    for (int i = 0; i < strlen(ptr); i++) {
+        query[i] = tolower(ptr[i]);
+    }
+    query[strlen(url)] = '\0';
+
+    // return the query string instead of the entire string
+    return query;
 }
 
 int main(int argc, char *argv[]) {
-  char s[] = "https://example.com/over/there?name=ferret";
+    char s[] = "https://example.com/over/there?Name=Ferret";
 
-  char *queries = getQueries(s);
-  printf("%s\n", queries);
+    char *queries = getQueries(s);
+    printf("%s\n", queries);
 
-  return 0;
+    // getQueries must return something on the heap that is "alive" after it returns, so
+    // main has to free it
+    free(queries);
+
+    return 0;
 }

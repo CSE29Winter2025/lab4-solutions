@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 struct node {
     int data;
@@ -9,15 +9,19 @@ struct node {
 void free_list(struct node *first) {
     struct node *it = first;
     while (it != NULL) {
-      free(it);
-      it = it->next;
+        struct node *to_delete = it;
+        // We need to access the data inside this node before freeing it
+        it = it->next;
+        // Now, we are done with it
+        free(to_delete);
     }
 }
 
 void print_list(struct node *first) {
     printf("{");
     for (struct node *it = first; it != NULL; it = it->next) {
-        if (it != first) printf(",");
+        if (it != first)
+            printf(",");
         printf("%d", it->data);
     }
     printf("}\n");
@@ -38,5 +42,6 @@ struct node *create_29_list(void) {
 int main(void) {
     struct node *ourlist = create_29_list();
     print_list(ourlist);
-    ourlist = NULL;
+    // Making ourlist NULL does not free what it originally points to
+    free_list(ourlist);
 }
